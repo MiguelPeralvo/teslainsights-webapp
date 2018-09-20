@@ -10,3 +10,10 @@ To run the web application, just execute the run_webapp.sh script in the root fo
 ```
 
 The Web Application should be accessible in the port 8050 of the running machine.
+
+
+To stop the web application, just execute the stop_webapp.sh script:
+
+```
+./stop_webapp.sh
+```
