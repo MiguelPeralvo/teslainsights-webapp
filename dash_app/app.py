@@ -8,13 +8,13 @@ import os
 import sqlite3
 import datetime as dt
 
-app = dash.Dash('streaming-teslamonitor-app')
+app = dash.Dash('streaming-teslamonitor-dash_app')
 server = app.server
 
 app.layout = html.Div([
     html.Div([
         html.H2("Tesla Monitor Streaming"),
-        html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
+        # html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
     ], className='banner'),
     html.Div([
         html.Div([
@@ -91,7 +91,7 @@ def gen_wind_speed(interval):
 
 
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
-                "https://cdn.rawgit.com/plotly/dash-app-stylesheets/737dc4ab11f7a1a8d6b5645d26f69133d97062ae/dash-wind-streaming.css",
+                "https://cdn.rawgit.com/plotly/dash-dash_app-stylesheets/737dc4ab11f7a1a8d6b5645d26f69133d97062ae/dash-wind-streaming.css",
                 "https://fonts.googleapis.com/css?family=Raleway:400,400i,700,700i",
                 "https://fonts.googleapis.com/css?family=Product+Sans:400,400i,700,700i"]
 
@@ -105,7 +105,7 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    # app.config["CACHE_TYPE"] = "null"
+    # dash_app.config["CACHE_TYPE"] = "null"
 
 
     app.run_server(use_reloader=False, debug=True)
