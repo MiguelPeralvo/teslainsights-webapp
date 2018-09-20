@@ -26,16 +26,16 @@ app.layout = html.Div([
             html.H3("Tesla Sentiment - Global Trends")
         ], className='Title'),
         html.Div([
-            dcc.Graph(id='wind-speed'),
-        ], className='twelve columns wind-speed'),
-        dcc.Interval(id='wind-speed-update', interval=1000, n_intervals=0),
+            dcc.Graph(id='tesla-sentiment'),
+        ], className='twelve columns tesla-sentiment'),
+        dcc.Interval(id='tesla-sentiment-update', interval=1000, n_intervals=0),
     ], className='row wind-speed-row')
 ], style={'padding': '0px 10px 15px 10px',
           'marginLeft': 'auto', 'marginRight': 'auto', "width": "900px",
           'boxShadow': '0px 0px 5px 5px rgba(204,204,204,0.4)'})
 
 
-@app.callback(Output('wind-speed', 'figure'), [Input('wind-speed-update', 'n_intervals')])
+@app.callback(Output('tesla-sentiment', 'figure'), [Input('tesla-sentiment-update', 'n_intervals')])
 def gen_wind_speed(interval):
     now = dt.datetime.now()
     sec = now.second
