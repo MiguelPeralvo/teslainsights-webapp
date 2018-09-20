@@ -9,4 +9,4 @@ To run the web application, just execute the run_webapp.sh script in the root fo
 
 ```
 
-The Web Application should be accessible in the port 80 of the running machine.
+The Web Application should be accessible in the port 8050 of the running machine.
