@@ -2,12 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, Event
-import plotly.plotly as py
 from plotly.graph_objs import *
-from scipy.stats import rayleigh
-import flask
-from flask import Flask
-import numpy as np
 import pandas as pd
 import os
 import sqlite3
@@ -26,7 +21,7 @@ app.layout = html.Div([
             html.H3("Tesla Sentiment - Global Trends")
         ], className='Title'),
         html.Div([
-            dcc.Graph(id='tesla-sentiment'),
+            dcc.Graph(id='tesla-sentiment-quick'),
         ], className='twelve columns tesla-sentiment'),
         dcc.Interval(id='tesla-sentiment-update', interval=1000, n_intervals=0),
     ], className='row wind-speed-row')
@@ -35,7 +30,7 @@ app.layout = html.Div([
           'boxShadow': '0px 0px 5px 5px rgba(204,204,204,0.4)'})
 
 
-@app.callback(Output('tesla-sentiment', 'figure'), [Input('tesla-sentiment-update', 'n_intervals')])
+@app.callback(Output('tesla-sentiment-quick', 'figure'), [Input('tesla-sentiment-update', 'n_intervals')])
 def gen_wind_speed(interval):
     now = dt.datetime.now()
     sec = now.second
