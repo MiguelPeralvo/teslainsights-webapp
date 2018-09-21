@@ -8,6 +8,10 @@ services:
     build: ./dash_app
     ports:
       - "8000:8000"
+    environment:
+      - TESLAMONITOR_WEBSERVICE_URL
+      - TESLAMONITOR_WEBSERVICE_USER_ID
+      - TESLAMONITOR_WEBSERVICE_PASSWORD
     command: gunicorn -w 1 -b :8000 app:server
 
 

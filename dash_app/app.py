@@ -3,47 +3,108 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, Event
 from plotly.graph_objs import *
-import pandas as pd
+from data import sentiment
 import os
-import sqlite3
-import datetime as dt
+from flask_caching import Cache
 
 app = dash.Dash('streaming-teslamonitor-dash_app')
+cache = Cache(app.server, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': 'cache-directory'
+})
 server = app.server
+
 
 app.layout = html.Div([
     html.Div([
-        html.H2("Tesla Monitor Streaming"),
+        html.H1("Tesla Monitor", style={'textAlign': 'center'}),
         # html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
     ], className='banner'),
     html.Div([
         html.Div([
-            html.H3("Tesla Sentiment - Global Trends")
+            html.H4("Tesla Sentiment Low Latency - Tesla Monitor Calculation", style={'textAlign': 'center'})
         ], className='Title'),
         html.Div([
             dcc.Graph(id='tesla-sentiment-quick'),
         ], className='twelve columns tesla-sentiment'),
-        dcc.Interval(id='tesla-sentiment-update', interval=1000, n_intervals=0),
-    ], className='row wind-speed-row')
+        dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
+    ], className='row wind-speed-row'),
+    html.Div([
+        html.Div([
+            html.H4("Tesla Sentiment Higher Latency - External Sources Aggregation", style={'textAlign': 'center'})
+        ], className='Title'),
+        html.Div([
+            dcc.Graph(id='tesla-sentiment-slow'),
+        ], className='twelve columns tesla-sentiment'),
+        dcc.Interval(id='tesla-sentiment-update-slow', interval=30000, n_intervals=0),
+    ], className='row wind-speed-row'),
 ], style={'padding': '0px 10px 15px 10px',
-          'marginLeft': 'auto', 'marginRight': 'auto', "width": "900px",
+          'marginLeft': 'auto', 'marginRight': 'auto', "width": "1200px",
           'boxShadow': '0px 0px 5px 5px rgba(204,204,204,0.4)'})
 
 
-@app.callback(Output('tesla-sentiment-quick', 'figure'), [Input('tesla-sentiment-update', 'n_intervals')])
-def gen_wind_speed(interval):
-    now = dt.datetime.now()
-    sec = now.second
-    minute = now.minute
-    hour = now.hour
+@app.callback(Output('tesla-sentiment-quick', 'figure'), [Input('tesla-sentiment-update-quick', 'n_intervals')])
+def get_tesla_sentiment_quick(interval):
+    @cache.memoize(timeout=5)
+    def get_tesla_sentiment_quick():
+        return sentiment.query_tesla_sentiment_quick()
 
-    total_time = (hour * 3600) + (minute * 60) + (sec)
+    df = get_tesla_sentiment_quick()
 
-    con = sqlite3.connect("./Data/wind-data.db")
-    df = pd.read_sql_query('SELECT Speed, SpeedError, Direction from Wind where\
-                            rowid > "{}" AND rowid <= "{}";'
-                            .format(total_time-200, total_time), con)
+    trace = Scatter(
+        y=df['Speed'],
+        line=Line(
+            color='#42C4F7'
+        ),
+        hoverinfo='skip',
+        error_y=ErrorY(
+            type='data',
+            array=df['SpeedError'],
+            thickness=1.5,
+            width=2,
+            color='#B4E8FC'
+        ),
+        mode='lines'
+    )
 
+    layout = Layout(
+        height=450,
+        xaxis=dict(
+            range=[0, 200],
+            showgrid=False,
+            showline=False,
+            zeroline=False,
+            fixedrange=True,
+            tickvals=[0, 50, 100, 150, 200],
+            ticktext=['200', '150', '100', '50', '0'],
+            title='Time Elapsed (sec)'
+        ),
+        yaxis=dict(
+            range=[min(0, min(df['Speed'])),
+                   max(45, max(df['Speed'])+max(df['SpeedError']))],
+            showline=False,
+            fixedrange=True,
+            zeroline=False,
+            nticks=max(6, round(df['Speed'].iloc[-1]/10))
+        ),
+        margin=Margin(
+            t=45,
+            l=50,
+            r=50
+        )
+    )
+
+    return Figure(data=[trace], layout=layout)
+
+
+@app.callback(Output('tesla-sentiment-slow', 'figure'), [Input('tesla-sentiment-update-slow', 'n_intervals')])
+def get_tesla_sentiment_slow(interval):
+
+    @cache.memoize(timeout=5)
+    def get_tesla_sentiment_slow():
+        return sentiment.query_tesla_sentiment_slow()
+
+    df = get_tesla_sentiment_slow()
     trace = Scatter(
         y=df['Speed'],
         line=Line(
