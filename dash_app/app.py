@@ -2,8 +2,8 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State, Event
-from plotly.graph_objs import *
-from data import sentiment
+from data import data_sentiment
+from viz import viz_sentiment
 import os
 from flask_caching import Cache
 
@@ -31,7 +31,7 @@ app.layout = html.Div([
     ], className='row wind-speed-row'),
     html.Div([
         html.Div([
-            html.H4("Tesla Sentiment Higher Latency - External Sources Aggregation", style={'textAlign': 'center'})
+            html.H4("Tesla Sentiment Higher Latency - External Sentiment Sources Aggregation", style={'textAlign': 'center'})
         ], className='Title'),
         html.Div([
             dcc.Graph(id='tesla-sentiment-slow'),
@@ -47,108 +47,20 @@ app.layout = html.Div([
 def get_tesla_sentiment_quick(interval):
     @cache.memoize(timeout=5)
     def get_tesla_sentiment_quick():
-        return sentiment.query_tesla_sentiment_quick()
+        return data_sentiment.query_tesla_sentiment_quick()
 
     df = get_tesla_sentiment_quick()
-
-    trace = Scatter(
-        y=df['Speed'],
-        line=Line(
-            color='#42C4F7'
-        ),
-        hoverinfo='skip',
-        error_y=ErrorY(
-            type='data',
-            array=df['SpeedError'],
-            thickness=1.5,
-            width=2,
-            color='#B4E8FC'
-        ),
-        mode='lines'
-    )
-
-    layout = Layout(
-        height=450,
-        xaxis=dict(
-            range=[0, 200],
-            showgrid=False,
-            showline=False,
-            zeroline=False,
-            fixedrange=True,
-            tickvals=[0, 50, 100, 150, 200],
-            ticktext=['200', '150', '100', '50', '0'],
-            title='Time Elapsed (sec)'
-        ),
-        yaxis=dict(
-            range=[min(0, min(df['Speed'])),
-                   max(45, max(df['Speed'])+max(df['SpeedError']))],
-            showline=False,
-            fixedrange=True,
-            zeroline=False,
-            nticks=max(6, round(df['Speed'].iloc[-1]/10))
-        ),
-        margin=Margin(
-            t=45,
-            l=50,
-            r=50
-        )
-    )
-
-    return Figure(data=[trace], layout=layout)
-
+    return viz_sentiment.get_tesla_sentiment_graph(df)
 
 @app.callback(Output('tesla-sentiment-slow', 'figure'), [Input('tesla-sentiment-update-slow', 'n_intervals')])
 def get_tesla_sentiment_slow(interval):
 
     @cache.memoize(timeout=5)
     def get_tesla_sentiment_slow():
-        return sentiment.query_tesla_sentiment_slow()
+        return data_sentiment.query_tesla_sentiment_slow()
 
     df = get_tesla_sentiment_slow()
-    trace = Scatter(
-        y=df['Speed'],
-        line=Line(
-            color='#42C4F7'
-        ),
-        hoverinfo='skip',
-        error_y=ErrorY(
-            type='data',
-            array=df['SpeedError'],
-            thickness=1.5,
-            width=2,
-            color='#B4E8FC'
-        ),
-        mode='lines'
-    )
-
-    layout = Layout(
-        height=450,
-        xaxis=dict(
-            range=[0, 200],
-            showgrid=False,
-            showline=False,
-            zeroline=False,
-            fixedrange=True,
-            tickvals=[0, 50, 100, 150, 200],
-            ticktext=['200', '150', '100', '50', '0'],
-            title='Time Elapsed (sec)'
-        ),
-        yaxis=dict(
-            range=[min(0, min(df['Speed'])),
-                   max(45, max(df['Speed'])+max(df['SpeedError']))],
-            showline=False,
-            fixedrange=True,
-            zeroline=False,
-            nticks=max(6, round(df['Speed'].iloc[-1]/10))
-        ),
-        margin=Margin(
-            t=45,
-            l=50,
-            r=50
-        )
-    )
-
-    return Figure(data=[trace], layout=layout)
+    return viz_sentiment.get_tesla_sentiment_graph(df)
 
 
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
@@ -166,7 +78,4 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    # dash_app.config["CACHE_TYPE"] = "null"
-
-
     app.run_server(use_reloader=False, debug=True)
