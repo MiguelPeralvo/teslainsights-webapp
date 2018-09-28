@@ -13,6 +13,7 @@ cache = Cache(app.server, config={
     'CACHE_DIR': 'cache-directory'
 })
 server = app.server
+url_global_sentiment_url = None
 
 
 app.layout = html.Div([
@@ -36,7 +37,7 @@ app.layout = html.Div([
         html.Div([
             dcc.Graph(id='tesla-sentiment-slow'),
         ], className='twelve columns tesla-sentiment'),
-        dcc.Interval(id='tesla-sentiment-update-slow', interval=30000, n_intervals=0),
+        dcc.Interval(id='tesla-sentiment-update-slow', interval=60000, n_intervals=0),
     ], className='row wind-speed-row'),
 ], style={'padding': '0px 10px 15px 10px',
           'marginLeft': 'auto', 'marginRight': 'auto', "width": "1200px",
@@ -45,21 +46,41 @@ app.layout = html.Div([
 
 @app.callback(Output('tesla-sentiment-quick', 'figure'), [Input('tesla-sentiment-update-quick', 'n_intervals')])
 def get_tesla_sentiment_quick(interval):
-    @cache.memoize(timeout=5)
-    def get_tesla_sentiment_quick():
-        return data_sentiment.query_tesla_sentiment_quick()
+    global url_global_sentiment_url
 
-    df = get_tesla_sentiment_quick()
+    @cache.memoize(timeout=5)
+    def get_tesla_sentiment_quick(url, params):
+        return data_sentiment.query_tesla_sentiment(url, params)
+
+    params = {
+        'from_ms_ago': 8640000000,
+        # 'from_created_epoch_ms': 1532441907000,
+        'limit': 250,
+        'sample_rate': 0.02,
+        'sentiment_type': 'teslamonitor',
+    }
+
+    # We revert the dataframe for the visualisation.
+    df = get_tesla_sentiment_quick(url_global_sentiment_url, params).iloc[::-1]
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
 @app.callback(Output('tesla-sentiment-slow', 'figure'), [Input('tesla-sentiment-update-slow', 'n_intervals')])
 def get_tesla_sentiment_slow(interval):
+    global url_global_sentiment_url
 
     @cache.memoize(timeout=5)
-    def get_tesla_sentiment_slow():
-        return data_sentiment.query_tesla_sentiment_slow()
+    def get_tesla_sentiment_slow(url, params):
+        return data_sentiment.query_tesla_sentiment(url, params)
 
-    df = get_tesla_sentiment_slow()
+    params = {
+        'from_ms_ago': 8640000000,
+        # 'from_created_epoch_ms': 1532441907000,
+        'limit': 250,
+        'sample_rate': 0.02,
+        'sentiment_type': 'global_external_ensemble',
+    }
+
+    df = get_tesla_sentiment_slow(url_global_sentiment_url, params).iloc[::-1]
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
 
@@ -78,4 +99,7 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
+#
+# os.getenv("TESLAMONITOR_WEBSERVICE_URL")
+    url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     app.run_server(use_reloader=False, debug=True)
