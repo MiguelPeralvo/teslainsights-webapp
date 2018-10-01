@@ -53,10 +53,11 @@ def get_tesla_sentiment_quick(interval):
         return data_sentiment.query_tesla_sentiment(url, params)
 
     params = {
-        'from_ms_ago': 8640000000,
+        'from_ms_ago': 360000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 250,
-        'sample_rate': 0.02,
+        'downsample_freq': 1000,
+        # 'sample_rate': 1.00,
         'sentiment_type': 'teslamonitor',
     }
 
@@ -76,8 +77,9 @@ def get_tesla_sentiment_slow(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 250,
-        'sample_rate': 0.02,
-        'sentiment_type': 'global_external_ensemble',
+        'downsample_freq': 1800,
+        'sentiment_type': 'teslamonitor',
+        #'sentiment_type': 'global_external_ensemble',
     }
 
     df = get_tesla_sentiment_slow(url_global_sentiment_url, params).iloc[::-1]
@@ -99,7 +101,6 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-#
-# os.getenv("TESLAMONITOR_WEBSERVICE_URL")
-    url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    # url_global_sentiment_url = f'http://0.0.0.0:8080/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     app.run_server(use_reloader=False, debug=True)
