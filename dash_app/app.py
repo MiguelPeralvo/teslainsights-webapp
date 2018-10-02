@@ -42,7 +42,7 @@ app.layout = html.Div([
         dcc.Interval(id='tesla-sentiment-update-slow', interval=60000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
 ], style={'padding': '0px 10px 15px 10px',
-          'marginLeft': 'auto', 'marginRight': 'auto', "width": "1480px",
+          'marginLeft': 'auto', 'marginRight': 'auto', "width": "1280px",
           'boxShadow': '0px 0px 5px 5px rgba(204,204,204,0.4)'})
 
 
@@ -79,7 +79,7 @@ def get_tesla_sentiment_slow(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 250,
-        'downsample_freq': 3600,
+        'downsample_freq': 2000,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
     }
