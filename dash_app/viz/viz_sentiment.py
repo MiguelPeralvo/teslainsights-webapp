@@ -1,7 +1,10 @@
 from plotly.graph_objs import *
+import pandas as pd
 
 
-def get_tesla_sentiment_graph(df, data_line_color='#42C4F7', error_line_color='#B4E8FC'):
+def get_tesla_sentiment_graph(
+        df, data_line_color='#42C4F7', error_line_color='#B4E8FC'
+):
     n_rows = len(df)
 
     trace = Scatter(
@@ -29,9 +32,16 @@ def get_tesla_sentiment_graph(df, data_line_color='#42C4F7', error_line_color='#
             showline=False,
             zeroline=False,
             fixedrange=True,
-            tickvals=[0, 500, 1000, 1500, 2000, 2500],
-            ticktext=['2500', '2000', '1500', '1000', '500', '0'],
-            title='Time Elapsed (sec)'
+            tickvals=[0, 50, 100, 150, 200, 249],
+            ticktext=[
+                str(pd.to_datetime(df.iloc[0]['min_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[50]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[100]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[150]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[200]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(df.iloc[249]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
+            ],
+            title='Date/Time (UTC)'
         ),
         yaxis=dict(
             range=[max(0, min(df['sentiment_absolute']) - 2*max(df['volatility']) if n_rows > 0 else 0),
@@ -42,7 +52,7 @@ def get_tesla_sentiment_graph(df, data_line_color='#42C4F7', error_line_color='#
             nticks=max(6, round(df['sentiment_absolute'].iloc[-1] / 10) if n_rows > 0 else 6)
         ),
         margin=Margin(
-            t=45,
+            t=5,
             l=50,
             r=50
         )

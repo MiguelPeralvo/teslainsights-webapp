@@ -23,24 +23,26 @@ app.layout = html.Div([
     ], className='banner'),
     html.Div([
         html.Div([
-            html.H4("Tesla Sentiment Low Latency - Tesla Monitor Calculation", style={'textAlign': 'center'})
-        ], className='Title'),
-        html.Div([
+            html.H4("Tesla Monitor - Social Sentiment - Last days", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-quick'),
-        ], className='twelve columns tesla-sentiment'),
+        ], className='Title'),
+        # html.Div([
+        #     dcc.Graph(id='tesla-sentiment-quick'),
+        # ], className='twelve columns tesla-sentiment', style={'vertical-align': 'top'}),
         dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
-    ], className='row wind-speed-row'),
+    ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
-            html.H4("Tesla Sentiment Higher Latency - External Sentiment Sources Aggregation", style={'textAlign': 'center'})
-        ], className='Title'),
-        html.Div([
+            html.H4("Tesla Monitor - Social Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-slow'),
-        ], className='twelve columns tesla-sentiment'),
+        ], className='Title'),
+        # html.Div([
+        #     dcc.Graph(id='tesla-sentiment-slow'),
+        # ], className='twelve columns tesla-sentiment', style={'vertical-align': 'top'}),
         dcc.Interval(id='tesla-sentiment-update-slow', interval=60000, n_intervals=0),
-    ], className='row wind-speed-row'),
+    ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
 ], style={'padding': '0px 10px 15px 10px',
-          'marginLeft': 'auto', 'marginRight': 'auto', "width": "1200px",
+          'marginLeft': 'auto', 'marginRight': 'auto', "width": "1480px",
           'boxShadow': '0px 0px 5px 5px rgba(204,204,204,0.4)'})
 
 
@@ -77,7 +79,7 @@ def get_tesla_sentiment_slow(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 250,
-        'downsample_freq': 1800,
+        'downsample_freq': 3600,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
     }
