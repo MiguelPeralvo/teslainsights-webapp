@@ -7,6 +7,7 @@ def get_tesla_sentiment_graph(
 ):
     # TODO: Adjust the x axis to the number of data points.
     n_rows = len(df)
+    n_bins = int(n_rows / 4)
 
     trace = Scatter(
         # x=df['ts'],
@@ -28,18 +29,18 @@ def get_tesla_sentiment_graph(
     layout = Layout(
         height=450,
         xaxis=dict(
-            range=[0, 200],
+            range=[0, n_rows],
             showgrid=False,
             showline=False,
             zeroline=False,
             fixedrange=True,
-            tickvals=[0, 50, 100, 150, 199],
+            tickvals=[0, n_bins, 2*n_bins, 3*n_bins, n_rows-1],
             ticktext=[
                 str(pd.to_datetime(df.iloc[0]['min_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[50]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[100]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[150]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(df.iloc[199]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[2*n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[3*n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(df.iloc[n_rows-1]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
             ],
             title='Date/Time (UTC)'
         ),

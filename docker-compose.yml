@@ -21,6 +21,6 @@ services:
     restart: always
     build: ./nginx
     ports:
-      - "8050:80"
+      - "80:80"
     depends_on:
       - dash_app
