@@ -28,25 +28,24 @@ def get_tesla_sentiment_graph(
     layout = Layout(
         height=450,
         xaxis=dict(
-            range=[0, 250],
+            range=[0, 200],
             showgrid=False,
             showline=False,
             zeroline=False,
             fixedrange=True,
-            tickvals=[0, 50, 100, 150, 200, 249],
+            tickvals=[0, 50, 100, 150, 199],
             ticktext=[
                 str(pd.to_datetime(df.iloc[0]['min_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
                 str(pd.to_datetime(round(df.iloc[50]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
                 str(pd.to_datetime(round(df.iloc[100]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
                 str(pd.to_datetime(round(df.iloc[150]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[200]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(df.iloc[249]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(df.iloc[199]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
             ],
             title='Date/Time (UTC)'
         ),
         yaxis=dict(
-            range=[max(0, min(df['sentiment_absolute']) - 2*max(df['volatility']) if n_rows > 0 else 0),
-                   max(45, max(df['sentiment_absolute']) + 2*max(df['volatility'])) if n_rows > 0 else 45],
+            range=[max(0, min(df['sentiment_absolute']) - 1.5*max(df['volatility']) if n_rows > 0 else 0),
+                   max(45, max(df['sentiment_absolute']) + 1.5*max(df['volatility'])) if n_rows > 0 else 45],
             showline=False,
             fixedrange=True,
             zeroline=False,

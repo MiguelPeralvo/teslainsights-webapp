@@ -55,10 +55,10 @@ def get_tesla_sentiment_quick(interval):
         return data_sentiment.query_tesla_sentiment(url, params)
 
     params = {
-        'from_ms_ago': 360000000,
+        'from_ms_ago': 72000000,
         # 'from_created_epoch_ms': 1532441907000,
-        'limit': 250,
-        'downsample_freq': 1000,
+        'limit': 200,
+        'downsample_freq': 60,
         # 'sample_rate': 1.00,
         'sentiment_type': 'teslamonitor',
     }
@@ -77,7 +77,7 @@ def get_tesla_sentiment_slow(interval):
     params = {
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
-        'limit': 250,
+        'limit': 200,
         'downsample_freq': 2000,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
