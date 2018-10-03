@@ -102,7 +102,7 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    # url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     # url_global_sentiment_url = f'http://0.0.0.0:8080/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
-    url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    # url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     app.run_server(use_reloader=False, debug=True)
