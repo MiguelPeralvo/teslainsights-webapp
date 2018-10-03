@@ -35,7 +35,7 @@ app.layout = html.Div([
         # html.Div([
         #     dcc.Graph(id='tesla-sentiment-quick'),
         # ], className='twelve columns tesla-sentiment', style={'vertical-align': 'top'}),
-        dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
+        dcc.Interval(id='tesla-sentiment-update-quick', interval=20000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
@@ -56,7 +56,7 @@ app.layout = html.Div([
 def get_tesla_sentiment_quick(interval):
     global url_global_sentiment_url
 
-    @cache.memoize(timeout=5)
+    @cache.memoize(timeout=10)
     def get_tesla_sentiment_quick(url, params):
         return data_sentiment.query_tesla_sentiment(url, params)
 
@@ -76,7 +76,7 @@ def get_tesla_sentiment_quick(interval):
 def get_tesla_sentiment_slow(interval):
     global url_global_sentiment_url
 
-    @cache.memoize(timeout=5)
+    @cache.memoize(timeout=30)
     def get_tesla_sentiment_slow(url, params):
         return data_sentiment.query_tesla_sentiment(url, params)
 
