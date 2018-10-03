@@ -63,8 +63,7 @@ def get_tesla_sentiment_quick(interval):
         'sentiment_type': 'teslamonitor',
     }
 
-    # We revert the dataframe for the visualisation.
-    df = get_tesla_sentiment_quick(url_global_sentiment_url, params).iloc[::-1]
+    df = get_tesla_sentiment_quick(url_global_sentiment_url, params)
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
 @app.callback(Output('tesla-sentiment-slow', 'figure'), [Input('tesla-sentiment-update-slow', 'n_intervals')])
@@ -84,7 +83,7 @@ def get_tesla_sentiment_slow(interval):
         #'sentiment_type': 'global_external_ensemble',
     }
 
-    df = get_tesla_sentiment_slow(url_global_sentiment_url, params).iloc[::-1]
+    df = get_tesla_sentiment_slow(url_global_sentiment_url, params)
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
 
@@ -103,6 +102,7 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    # url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     # url_global_sentiment_url = f'http://0.0.0.0:8080/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     app.run_server(use_reloader=False, debug=True)

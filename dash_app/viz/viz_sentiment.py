@@ -5,6 +5,7 @@ import pandas as pd
 def get_tesla_sentiment_graph(
         df, data_line_color='#42C4F7', error_line_color='#B4E8FC'
 ):
+    # TODO: Adjust the x axis to the number of data points.
     n_rows = len(df)
 
     trace = Scatter(

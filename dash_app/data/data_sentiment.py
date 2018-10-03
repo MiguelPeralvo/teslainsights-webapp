@@ -13,9 +13,12 @@ def query_tesla_sentiment(url, params):
 
     try:
         url = Request('GET', f'{url}', params=params).prepare().url
-        df = pd.read_json(url)
+        # We revert the dataframe for the visualisation.
+        df = pd.read_json(url).iloc[::-1]
         # TODO: Calculate volatility
-        df['volatility'] = np.random.uniform(0, 5, df.shape[0])
+        df['volatility'] = df['sentiment_absolute'].rolling(20).std()
+        df['volatility'] = df['volatility'].bfill()
+        # df['volatility'] = np.random.uniform(0, 5, df.shape[0])
     except:
         logger.warning(f'Problem when accessing url {url}: {traceback.format_exc()}')
         df = pd.DataFrame(columns=['sentiment_absolute', 'volatility'])
