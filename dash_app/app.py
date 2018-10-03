@@ -6,6 +6,12 @@ from data import data_sentiment
 from viz import viz_sentiment
 import os
 from flask_caching import Cache
+import traceback
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
 
 app = dash.Dash('streaming-teslamonitor-dash_app')
 cache = Cache(app.server, config={
@@ -13,7 +19,7 @@ cache = Cache(app.server, config={
     'CACHE_DIR': 'cache-directory'
 })
 server = app.server
-url_global_sentiment_url = None
+url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
 
 
 app.layout = html.Div([
@@ -102,7 +108,7 @@ if 'DYNO' in os.environ:
     })
 
 if __name__ == '__main__':
-    url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
+    # url_global_sentiment_url =
     # url_global_sentiment_url = f'http://0.0.0.0:8080/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     # url_global_sentiment_url = f'http://0.0.0.0:9091/{os.getenv("TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT")}'
     app.run_server(use_reloader=False, debug=True)
