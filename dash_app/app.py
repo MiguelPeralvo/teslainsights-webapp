@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+from datetime import datetime
 from dash.dependencies import Input, Output, State, Event
 from data import data_sentiment
 from viz import viz_sentiment
@@ -29,23 +30,38 @@ app.layout = html.Div([
     ], className='banner'),
     html.Div([
         html.Div([
-            html.H4("Tesla Monitor - Social Sentiment - Last days", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            html.H4("Tesla Monitor - Social Sentiment - Last day", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-quick'),
         ], className='Title'),
-        # html.Div([
-        #     dcc.Graph(id='tesla-sentiment-quick'),
-        # ], className='twelve columns tesla-sentiment', style={'vertical-align': 'top'}),
-        dcc.Interval(id='tesla-sentiment-update-quick', interval=20000, n_intervals=0),
+        dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
+    ], className='row wind-speed-row', style={'width': '98%', 'display': 'inline-block'}),
+    html.Div([
+        html.Div([
+            html.H4("Tesla Monitor - Social Sentiment - Last days", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            dcc.Graph(id='tesla-sentiment-slow'),
+        ], className='Title'),
+        dcc.Interval(id='tesla-sentiment-update-slow', interval=120000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
             html.H4("Tesla Monitor - Social Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
-            dcc.Graph(id='tesla-sentiment-slow'),
+            dcc.Graph(id='tesla-sentiment-historical'),
         ], className='Title'),
-        # html.Div([
-        #     dcc.Graph(id='tesla-sentiment-slow'),
-        # ], className='twelve columns tesla-sentiment', style={'vertical-align': 'top'}),
-        dcc.Interval(id='tesla-sentiment-update-slow', interval=60000, n_intervals=0),
+        dcc.Interval(id='tesla-sentiment-update-historical', interval=600000, n_intervals=0),
+    ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
+    html.Div([
+        html.Div([
+            html.H4("External computation - Social Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            dcc.Graph(id='external-social-sentiment-historical'),
+        ], className='Title'),
+        dcc.Interval(id='external-social-sentiment-update-historical', interval=600000, n_intervals=0),
+    ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
+    html.Div([
+        html.Div([
+            html.H4("External computation - News Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            dcc.Graph(id='external-news-sentiment-historical'),
+        ], className='Title'),
+        dcc.Interval(id='external-news-sentiment-update-historical', interval=600000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
 ], style={'padding': '0px 10px 15px 10px',
           'marginLeft': 'auto', 'marginRight': 'auto', "width": "1280px",
@@ -56,28 +72,53 @@ app.layout = html.Div([
 def get_tesla_sentiment_quick(interval):
     global url_global_sentiment_url
 
-    @cache.memoize(timeout=10)
-    def get_tesla_sentiment_quick(url, params):
+    @cache.memoize(timeout=5)
+    def get_tesla_sentiment_quick_internal(url, params):
         return data_sentiment.query_tesla_sentiment(url, params)
 
+    delta_ts = datetime.utcnow() - datetime(1970, 1, 1)
+
+    # Bypass potential parameter memoization, but prevent excessive different requests if under attack
+    utc_now = int((delta_ts.days * 24 * 60 * 60 + (delta_ts.seconds//10)*10)) * 1000  # + delta_ts.microseconds / 1000.0)
+
     params = {
-        'from_ms_ago': 2880000000,
-        # 'from_created_epoch_ms': 1532441907000,
-        'limit': 150,
-        'downsample_freq': 600,
-        # 'sample_rate': 1.00,
+        # 'from_ms_ago': 600000,
+        'from_created_epoch_ms': utc_now - 86400000,
+        'limit': 250,
+        'downsample_freq': 400,
+        # 'sample_rate': 0.99,
         'sentiment_type': 'teslamonitor',
     }
 
-    df = get_tesla_sentiment_quick(url_global_sentiment_url, params)
+    df = get_tesla_sentiment_quick_internal(url_global_sentiment_url, params)
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
 @app.callback(Output('tesla-sentiment-slow', 'figure'), [Input('tesla-sentiment-update-slow', 'n_intervals')])
 def get_tesla_sentiment_slow(interval):
     global url_global_sentiment_url
 
-    @cache.memoize(timeout=30)
-    def get_tesla_sentiment_slow(url, params):
+    @cache.memoize(timeout=60)
+    def get_tesla_sentiment_slow_internal(url, params):
+        return data_sentiment.query_tesla_sentiment(url, params)
+
+    params = {
+        'from_ms_ago': 5760000000,
+        # 'from_created_epoch_ms': 1532441907000,
+        'limit': 150,
+        'downsample_freq': 1200,
+        # 'sample_rate': 1.00,
+        'sentiment_type': 'teslamonitor',
+    }
+
+    df = get_tesla_sentiment_slow_internal(url_global_sentiment_url, params)
+    return viz_sentiment.get_tesla_sentiment_graph(df)
+
+@app.callback(Output('tesla-sentiment-historical', 'figure'), [Input('tesla-sentiment-update-historical', 'n_intervals')])
+def get_tesla_sentiment_historical(interval):
+    global url_global_sentiment_url
+
+    @cache.memoize(timeout=300)
+    def get_tesla_sentiment_historical_internal(url, params):
         return data_sentiment.query_tesla_sentiment(url, params)
 
     params = {
@@ -89,9 +130,50 @@ def get_tesla_sentiment_slow(interval):
         #'sentiment_type': 'global_external_ensemble',
     }
 
-    df = get_tesla_sentiment_slow(url_global_sentiment_url, params)
+    df = get_tesla_sentiment_historical_internal(url_global_sentiment_url, params)
     return viz_sentiment.get_tesla_sentiment_graph(df)
 
+
+@app.callback(Output('external-social-sentiment-historical', 'figure'), [Input('external-social-sentiment-update-historical', 'n_intervals')])
+def get_external_social_sentiment_historical(interval):
+    global url_global_sentiment_url
+
+    @cache.memoize(timeout=300)
+    def get_external_social_sentiment_historical_internal(url, params):
+        return data_sentiment.query_tesla_sentiment(url, params)
+
+    params = {
+        'from_ms_ago': 8640000000,
+        # 'from_created_epoch_ms': 1532441907000,
+        'limit': 150,
+        'downsample_freq': 3600,
+        'sentiment_type': 'social_external_ensemble',
+        #'sentiment_type': 'global_external_ensemble',
+    }
+
+    df = get_external_social_sentiment_historical_internal(url_global_sentiment_url, params)
+    return viz_sentiment.get_tesla_sentiment_graph(df, data_line_color='#F75441', error_line_color='#F2978C')
+
+
+@app.callback(Output('external-news-sentiment-historical', 'figure'), [Input('external-news-sentiment-update-historical', 'n_intervals')])
+def get_external_news_sentiment_historical(interval):
+    global url_global_sentiment_url
+
+    @cache.memoize(timeout=300)
+    def get_external_news_sentiment_historical_internal(url, params):
+        return data_sentiment.query_tesla_sentiment(url, params)
+
+    params = {
+        'from_ms_ago': 8640000000,
+        # 'from_created_epoch_ms': 1532441907000,
+        'limit': 150,
+        'downsample_freq': 3600,
+        'sentiment_type': 'news_external_ensemble',
+        #'sentiment_type': 'global_external_ensemble',
+    }
+
+    df = get_external_news_sentiment_historical_internal(url_global_sentiment_url, params)
+    return viz_sentiment.get_tesla_sentiment_graph(df, data_line_color='#DA3EF9', error_line_color='#E6A9F2')
 
 external_css = ["https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css",
                 "https://cdn.rawgit.com/plotly/dash-dash_app-stylesheets/737dc4ab11f7a1a8d6b5645d26f69133d97062ae/dash-wind-streaming.css",
