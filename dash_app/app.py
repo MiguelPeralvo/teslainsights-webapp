@@ -12,7 +12,7 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app = dash.Dash('streaming-teslamonitor-dash_app')
+app = dash.Dash('streaming-insights-dash_app')
 cache = Cache(app.server, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': 'cache-directory'
@@ -25,26 +25,26 @@ url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.gete
 
 app.layout = html.Div([
     html.Div([
-        html.H1("Tesla Monitor", style={'textAlign': 'center'}),
+        html.H1("Tesla Insights", style={'textAlign': 'center'}),
         # html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
     ], className='banner'),
     html.Div([
         html.Div([
-            html.H4("Tesla Monitor - Social Sentiment - Last day", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            html.H4("Tesla Insights - Social Sentiment - Last day", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-quick'),
         ], className='Title'),
         dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '98%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
-            html.H4("Tesla Monitor - Social Sentiment - Last days", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            html.H4("Tesla Insights - Social Sentiment - Last days", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-slow'),
         ], className='Title'),
         dcc.Interval(id='tesla-sentiment-update-slow', interval=120000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '49%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
-            html.H4("Tesla Monitor - Social Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
+            html.H4("Tesla Insights - Social Sentiment - Last weeks", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-historical'),
         ], className='Title'),
         dcc.Interval(id='tesla-sentiment-update-historical', interval=600000, n_intervals=0),
@@ -125,7 +125,7 @@ def get_tesla_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 3600,
+        'downsample_freq': 4800,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -146,7 +146,7 @@ def get_external_social_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 3600,
+        'downsample_freq': 4800,
         'sentiment_type': 'social_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -167,7 +167,7 @@ def get_external_news_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 3600,
+        'downsample_freq': 4800,
         'sentiment_type': 'news_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
