@@ -33,7 +33,7 @@ app.layout = html.Div([
             html.H4("Tesla Insights - Social Sentiment - Last day", style={'textAlign': 'center', 'vertical-align': 'bottom'}),
             dcc.Graph(id='tesla-sentiment-quick'),
         ], className='Title'),
-        dcc.Interval(id='tesla-sentiment-update-quick', interval=10000, n_intervals=0),
+        dcc.Interval(id='tesla-sentiment-update-quick', interval=30000, n_intervals=0),
     ], className='row wind-speed-row', style={'width': '98%', 'display': 'inline-block'}),
     html.Div([
         html.Div([
@@ -72,7 +72,7 @@ app.layout = html.Div([
 def get_tesla_sentiment_quick(interval):
     global url_global_sentiment_url
 
-    @cache.memoize(timeout=5)
+    @cache.memoize(timeout=15)
     def get_tesla_sentiment_quick_internal(url, params):
         return data_sentiment.query_tesla_sentiment(url, params)
 
@@ -125,7 +125,7 @@ def get_tesla_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 4800,
+        'downsample_freq': 6000,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -146,7 +146,7 @@ def get_external_social_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 4800,
+        'downsample_freq': 6000,
         'sentiment_type': 'social_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -167,7 +167,7 @@ def get_external_news_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 4800,
+        'downsample_freq': 6000,
         'sentiment_type': 'news_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
