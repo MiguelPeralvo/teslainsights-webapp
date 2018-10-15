@@ -125,7 +125,7 @@ def get_tesla_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 8000,
+        'downsample_freq': 14400,
         'sentiment_type': 'teslamonitor',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -146,7 +146,7 @@ def get_external_social_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 8000,
+        'downsample_freq': 14400,
         'sentiment_type': 'social_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
@@ -167,7 +167,7 @@ def get_external_news_sentiment_historical(interval):
         'from_ms_ago': 8640000000,
         # 'from_created_epoch_ms': 1532441907000,
         'limit': 150,
-        'downsample_freq': 8000,
+        'downsample_freq': 14400,
         'sentiment_type': 'news_external_ensemble',
         #'sentiment_type': 'global_external_ensemble',
     }
