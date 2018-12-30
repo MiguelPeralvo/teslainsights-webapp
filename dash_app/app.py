@@ -25,7 +25,7 @@ url_global_sentiment_url = f'{os.getenv("TESLAMONITOR_WEBSERVICE_URL")}/{os.gete
 
 app.layout = html.Div([
     html.Div([
-        html.H1("Tesla Insights", style={'textAlign': 'center'}),
+        html.H1("Tesla Insights - Demo Mode", style={'textAlign': 'center'}),
         # html.Img(src="https://s3-us-west-1.amazonaws.com/plotly-tutorials/logo/new-branding/dash-logo-by-plotly-stripe-inverted.png"),
     ], className='banner'),
     html.Div([

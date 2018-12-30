@@ -12,22 +12,33 @@ import datetime as dt
 def query_tesla_sentiment(url, params):
 
     try:
-        url = Request('GET', f'{url}', params=params).prepare().url
-        # We revert the dataframe for the visualisation.
-        df = pd.read_json(url).iloc[::-1]
-        # TODO: Calculate volatility
-        df['volatility'] = df['sentiment_absolute'].rolling(20).std()
-        df['volatility'] = df['volatility'].bfill()
-        # df['volatility'] = np.random.uniform(0, 5, df.shape[0])
+        df = generate_data(params)
+        # url = Request('GET', f'{url}', params=params).prepare().url
+        # # We revert the dataframe for the visualisation.
+        # df = pd.read_json(url).iloc[::-1]
+        # # TODO: Calculate volatility
+        # df['volatility'] = df['sentiment_absolute'].rolling(20).std()
+        # df['volatility'] = df['volatility'].bfill()
+        # # df['volatility'] = np.random.uniform(0, 5, df.shape[0])
     except:
         logger.warning(f'Problem when accessing url {url}: {traceback.format_exc()}')
-        df = pd.DataFrame(columns=['sentiment_absolute', 'volatility'])
+        df = pd.DataFrame(columns=['sentiment_type', 'sentiment_seconds_back', 'bin', 'created_at_epoch_ms',
+                               'sentiment_absolute', 'sentiment_normalized',' min_created_at_epoch_ms',
+                               'max_created_at_epoch_ms', 'volatility'
+                               ]
+                      )
 
     return df
 
 
 def generate_data(params):
-    pass
+    df = pd.DataFrame(columns=['sentiment_type', 'sentiment_seconds_back', 'bin', 'created_at_epoch_ms',
+                               'sentiment_absolute', 'sentiment_normalized',' min_created_at_epoch_ms',
+                               'max_created_at_epoch_ms', 'volatility'
+                               ]
+                      )
+
+    return df
 
 
     # delta_ts = datetime.utcnow() - datetime(1970, 1, 1)
@@ -35,6 +46,10 @@ def generate_data(params):
     # # Bypass potential parameter memoization, but prevent excessive different requests if under attack
     # utc_now = int(
     #     (delta_ts.days * 24 * 60 * 60 + (delta_ts.seconds // 10) * 10)) * 1000  # + delta_ts.microseconds / 1000.0)
+
+    # sentiment_type, sentiment_seconds_back, bin, created_at_epoch_ms, sentiment_absolute, sentiment_normalized, min_created_at_epoch_ms, max_created_at_epoch_ms
+    # social_teslamonitor, 43200, 3865191, 1546076256500, 43.0140000, NULL, 1546076216000, 1546076286000
+    # social_teslamonitor, 43200, 3865190, 1546076000658, 45.2756579, NULL, 1546075850000, 1546076179000
 
     # get_tesla_sentiment_quick
     # params = {
