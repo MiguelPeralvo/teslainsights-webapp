@@ -29,18 +29,28 @@ def get_tesla_sentiment_graph(
     layout = Layout(
         height=450,
         xaxis=dict(
-            range=[0, n_rows],
+            range=[0, n_rows] if n_rows > 0 else 5,
             showgrid=False,
             showline=False,
             zeroline=False,
             fixedrange=True,
-            tickvals=[0, n_bins, 2*n_bins, 3*n_bins, n_rows-1],
+            tickvals=[0, n_bins, 2*n_bins, 3*n_bins, n_rows-1] if n_rows > 0 else [0, 1, 2, 3, 4],
             ticktext=[
                 str(pd.to_datetime(df.iloc[0]['min_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[2*n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(round(df.iloc[3*n_bins]['created_at_epoch_ms']/1000)*1000, unit='ms')).replace(' ', '<br />'),
-                str(pd.to_datetime(df.iloc[n_rows-1]['max_created_at_epoch_ms'], unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[n_bins]['created_at_epoch_ms'] / 1000) * 1000, unit='ms')).replace(
+                    ' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[2 * n_bins]['created_at_epoch_ms'] / 1000) * 1000,
+                                   unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(round(df.iloc[3 * n_bins]['created_at_epoch_ms'] / 1000) * 1000,
+                                   unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(df.iloc[n_rows - 1]['max_created_at_epoch_ms'], unit='ms')).replace(' ',
+                                                                                                       '<br />'),
+            ] if n_rows > 0 else [
+                str(pd.to_datetime(1545830658000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(1545917058000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(1546003458000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(1546089858000, unit='ms')).replace(' ', '<br />'),
+                str(pd.to_datetime(1546176258000, unit='ms')).replace(' ', '<br />')
             ],
             title='Date/Time (UTC)'
         ),
