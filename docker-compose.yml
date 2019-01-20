@@ -14,6 +14,8 @@ services:
       - TESLAMONITOR_WEBSERVICE_PASSWORD
       - TESLAMONITOR_WEBSERVICE_GLOBAL_SENTIMENTS_SEGMENT
     command: gunicorn -w 1 -b :8000 app:server
+    volumes:
+      - ./tests/data:/tmp/data
 
 
   nginx:
