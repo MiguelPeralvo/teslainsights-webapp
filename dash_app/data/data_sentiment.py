@@ -50,7 +50,7 @@ def generate_data(params):
     logger.info('Reading data from {}'.format(data_path))
 
     df = pd.read_csv(data_path, header=0).iloc[::-1]
-    epoch_x_days = int(161 * 24 * 60 * 60) * 1000
+    epoch_x_days = int(130 * 24 * 60 * 60) * 1000
 
     # We move the historical data x days into the future
     df = df.assign(
@@ -59,9 +59,12 @@ def generate_data(params):
         max_created_at_epoch_ms=df['max_created_at_epoch_ms'] + epoch_x_days
     )
 
+    # print(df['created_at_epoch_ms'].min())
+    # print(df['created_at_epoch_ms'].max())
+
     now = datetime.utcnow() - datetime(1970, 1, 1)
     epoch_now = int((now.days * 24 * 60 * 60 + (now.seconds // 10) * 10)) * 1000
 
     logger.info('Selecting data older than {}'.format(epoch_now))
-    # df = df.loc[df['created_at_epoch_ms'] <= epoch_now]
-    return df[:params['limit']]
+    df = df.loc[df['created_at_epoch_ms'] <= epoch_now].sort_values(by='created_at_epoch_ms', ascending=True)
+    return df[-params['limit']:]
